@@ -32,15 +32,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"x\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/richi/Solidity/reactTruffle/contracts/SimpleStorage.sol\":\"SimpleStorage\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/richi/Solidity/reactTruffle/contracts/SimpleStorage.sol\":{\"keccak256\":\"0x80823aaaece52989914990ab8216faab92ffb90be293664daff64fb6ce796160\",\"urls\":[\"bzz-raw://85e83be4df0d892d0b130c8a6840e3f3179eb27621cec635fb257ee9d08f5358\",\"dweb:/ipfs/QmWRsF9K1AN6WzAWbeZAxSdxX3pJEvn9sFwjKXCPPYythZ\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a723158209f34ed793f40ad47e93a40dd28dde9ce0ffd2acadc068ce643e459bc4e5b34a564736f6c63430005100032",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a723158209f34ed793f40ad47e93a40dd28dde9ce0ffd2acadc068ce643e459bc4e5b34a564736f6c63430005100032",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"x\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleStorage.sol\":\"SimpleStorage\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleStorage.sol\":{\"keccak256\":\"0x80823aaaece52989914990ab8216faab92ffb90be293664daff64fb6ce796160\",\"urls\":[\"bzz-raw://85e83be4df0d892d0b130c8a6840e3f3179eb27621cec635fb257ee9d08f5358\",\"dweb:/ipfs/QmWRsF9K1AN6WzAWbeZAxSdxX3pJEvn9sFwjKXCPPYythZ\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a7231582056860c3b86d85ba4977a25e08a4eaa3722130e7cef3e4d2b8199c0e0ea5bcde764736f6c63430005100032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a7231582056860c3b86d85ba4977a25e08a4eaa3722130e7cef3e4d2b8199c0e0ea5bcde764736f6c63430005100032",
   "sourceMap": "67:176:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;67:176:1;;;;;;;",
   "deployedSourceMap": "67:176:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;67:176:1;;;;;;;;;;;;;;;;;;;;;;;;114:53;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;114:53:1;;;;;;;;;;;;;;;;;:::i;:::-;;171:70;;;:::i;:::-;;;;;;;;;;;;;;;;;;;114:53;161:1;148:10;:14;;;;114:53;:::o;171:70::-;207:4;226:10;;219:17;;171:70;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.21 <8.10.0;\n\ncontract SimpleStorage {\n  uint storedData;\n\n  function set(uint x) public {\n    storedData = x;\n  }\n\n  function get() public view returns (uint) {\n    return storedData;\n  }\n}\n",
-  "sourcePath": "C:/Users/richi/Solidity/reactTruffle/contracts/SimpleStorage.sol",
+  "sourcePath": "C:/Users/richi/Solidity/ProjectDAO/contracts/SimpleStorage.sol",
   "ast": {
-    "absolutePath": "/C/Users/richi/Solidity/reactTruffle/contracts/SimpleStorage.sol",
+    "absolutePath": "/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleStorage.sol",
     "exportedSymbols": {
       "SimpleStorage": [
         59
@@ -295,7 +295,7 @@
     "src": "32:212:1"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/richi/Solidity/reactTruffle/contracts/SimpleStorage.sol",
+    "absolutePath": "/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleStorage.sol",
     "exportedSymbols": {
       "SimpleStorage": [
         59
@@ -557,12 +557,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x704E555964353Fc40A556B748e2593B6CC35eBaD",
-      "transactionHash": "0x6aee13ab7becccf750f556e28ea33322ec9afdf923d3893296a486fa570f7011"
+      "address": "0x865a1c183fb07B139b4B9ceF3DbD63a4ae34217a",
+      "transactionHash": "0x29d9c4ce07c45534ddc4ec6c49b06f634b97beac2871404d2e8b52daa7bec910"
     }
   },
   "schemaVersion": "3.3.1",
-  "updatedAt": "2022-05-05T13:54:35.333Z",
+  "updatedAt": "2022-05-06T07:27:23.131Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
