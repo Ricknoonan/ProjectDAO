@@ -29,7 +29,6 @@ contract SimpleContractAgreement {
     }
 
     function setEmployer() public notEmployee {
-        require(msg.sender != employee);
         if (employerCounter < 1) {
             employer = msg.sender;
             employerCounter++;
@@ -41,11 +40,10 @@ contract SimpleContractAgreement {
     }
 
     function setEmployee() public notEmployer {
-        if (employeeCounter < 0) {
+        if (employeeCounter < 1) {
             employer = msg.sender;
             employeeCounter++;
         }
-        employer = msg.sender;
     }
 
     function getEmployee() public view returns (address) {

@@ -6,7 +6,6 @@ import "./App.css";
 
 
 
-
 class App extends Component {
   state = { web3: null, accounts: null, contract: null };
 
@@ -46,11 +45,43 @@ class App extends Component {
     const { accounts, contract } = this.state;
     await contract.methods.setEmployer().send({ from: accounts[0] });
     const response = await contract.methods.getEmployer().call();
-    // Update state with the result.
     this.setState({ employer: response });
-    console.log(response)
-    console.log(accounts)
   }
+
+  setPaymentAmount = async () => {
+    const { accounts, contract } = this.state;
+    await contract.methods.setPaymentAmount(10000).send({ from: accounts[0] });
+    const response = await contract.methods.getPaymentAmount().call();
+    this.setState({ payment: response });
+  }
+
+  setContractMonths = async () => {
+    const { accounts, contract } = this.state;
+    await contract.methods.setContractMonths(2).send({ from: accounts[0] });
+    const response = await contract.methods.getContractMonths().call();
+    this.setState({ contractMonths: response });
+  }
+
+  setEmployee = async () => {
+    const { accounts, contract } = this.state;
+    await contract.methods.setEmployee().send({ from: accounts[0] });
+    const response = await contract.methods.getEmployee().call();
+    this.setState({ employee: response });
+  }
+
+  getEmployee = async () => {
+    const { contract } = this.state;
+    const response = await contract.methods.getEmployee().call();
+    this.setState({ employee: response });
+  }
+
+  getEmployer = async () => {
+    const { contract } = this.state;
+    const response = await contract.methods.getEmployer().call();
+    this.setState({ employer: response });
+  }
+
+
 
 
   render() {
@@ -64,7 +95,25 @@ class App extends Component {
         <button onClick={this.setEmployer}>
           Set Employer
         </button>
-        <div>The stored value is: {this.state.employer}</div>
+        <button onClick={this.setPaymentAmount}>
+          Set Payment
+        </button>
+        <button onClick={this.setContractMonths}>
+          Set Contract Length
+        </button>
+        <button onClick={this.setEmployee}>
+          Set Employee
+        </button>
+        <button onClick={this.getEmployee}>
+          Get Employee
+        </button>
+        <button onClick={this.getEmployer}>
+          Get Employer
+        </button>
+        <div>Employer: {this.state.employer}</div>
+        <div>Payment: {this.state.payment}</div>
+        <div>Contract Months: {this.state.contractMonths}</div>
+        <div>Employee: {this.state.employee}</div>
       </div>
     );
   }
