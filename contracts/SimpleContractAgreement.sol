@@ -30,7 +30,7 @@ contract SimpleContractAgreement {
 
     function setEmployer() public notEmployee {
         require(msg.sender != employee);
-        if (employerCounter < 0) {
+        if (employerCounter < 1) {
             employer = msg.sender;
             employerCounter++;
         }
