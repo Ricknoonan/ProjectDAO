@@ -41,7 +41,7 @@ contract SimpleContractAgreement {
 
     function setEmployee() public notEmployer {
         if (employeeCounter < 1) {
-            employer = msg.sender;
+            employee = msg.sender;
             employeeCounter++;
         }
     }
