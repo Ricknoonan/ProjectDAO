@@ -1,38 +1,79 @@
 const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
 
 contract("SimpleContractAgreement", accounts => {
-    it("...should set Employer as the first account", async () => {
+    it("...should set Contract Months as 2", async () => {
         const simpleContractInstance = await SimpleContractAgreement.deployed();
 
-        // Set Employer address
-        await simpleContractInstance.setEmployer({
-            from: "0x7148c46e9103405b057E94191e1C1FFAfA7425E3"
-        });
+        await simpleContractInstance.setEmployer({ from: accounts[0] });
+        // Set Contract Months
 
-        // Get Employer address
-        const address = await simpleContractInstance.getEmployer.call();
+        try {
+            await simpleContractInstance.setContractMonths(2, { from: accounts[1] });
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Only Employer allowed to call this function", "The error should be OnlyEmployer error message");
+        }
+        // set contract length as an account that is not the employer
 
-        assert.equal(address, "0x7148c46e9103405b057E94191e1C1FFAfA7425E3", "Employer is now the first account");
+        // set contract length as an account that is the employer
+        await simpleContractInstance.setContractMonths(2, { from: accounts[0] });
+
+        // GetContract Months
+        const months = await simpleContractInstance.getContractMonths.call();
+
+        assert.equal(months, 2, "Contract Months is now 2");
     });
 });
 
 contract("SimpleContractAgreement", accounts => {
-    it("...set employee with employer add then with new addr", async () => {
+    it("...should not set Employer and then set Employee from the same account", async () => {
         const simpleContractInstance = await SimpleContractAgreement.deployed();
 
-        // Set Employee address
-        await simpleContractInstance.setEmployee.send({ from: accounts[0] });
+        await simpleContractInstance.setEmployer({ from: accounts[0] });
 
-        const employeeAddress1 = await simpleContractInstance.getEmployee.call();
+        try {
+            await simpleContractInstance.setEmployee({ from: accounts[0] });
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Employer not allowed to call this function", "The error should be notEmployer error message");
+        }
 
+    });
+});
 
-        assert.equal(employeeAddress1, "0x0000000000000000000000000000000000000000", "The Employee is stil the default address");
-        await simpleContractInstance.setEmployee.send({ from: accounts[1] });
+contract("SimpleContractAgreement", accounts => {
+    it("...should not set Employee and then set Employer from the same account", async () => {
+        const simpleContractInstance = await SimpleContractAgreement.deployed();
 
+        await simpleContractInstance.setEmployee({ from: accounts[0] });
 
-        // Get Employer address
-        const address = await simpleContractInstance.getEmployee.call();
+        try {
+            await simpleContractInstance.setEmployer({ from: accounts[0] });
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Employee not allowed to call this function", "The error should be notEmployee error message");
+        }
 
-        assert.equal(address, accounts[1], "The Employee is stil stored");
+    });
+});
+
+contract("SimpleContractAgreement", accounts => {
+    it("...should set Payment amount as 10000", async () => {
+        const simpleContractInstance = await SimpleContractAgreement.deployed();
+
+        await simpleContractInstance.setEmployer({ from: accounts[0] });
+
+        try {
+            await simpleContractInstance.setPaymentAmount(10000, { from: accounts[1] });
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Only Employer allowed to call this function", "The error should be OnlyEmployer error message");
+        }
+
+        await simpleContractInstance.setPaymentAmount(10000, { from: accounts[0] });
+
+        const months = await simpleContractInstance.getPaymentAmount.call();
+
+        assert.equal(months, 10000, "Payment amount is now 10000");
     });
 });

@@ -51,17 +51,26 @@ contract SimpleContractAgreement {
     }
 
     modifier onlyEmployer() {
-        require(msg.sender == employer);
+        require(
+            msg.sender == employer,
+            "Only Employer allowed to call this function"
+        );
         _;
     }
 
     modifier notEmployer() {
-        require(msg.sender != employer);
+        require(
+            msg.sender != employer,
+            "Employer not allowed to call this function"
+        );
         _;
     }
 
     modifier notEmployee() {
-        require(msg.sender != employee);
+        require(
+            msg.sender != employee,
+            "Employee not allowed to call this function"
+        );
         _;
     }
 }
