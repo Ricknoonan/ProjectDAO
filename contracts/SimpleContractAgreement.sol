@@ -31,6 +31,7 @@ contract SimpleContractAgreement {
         address particpantAddr;
         bool isEmployer;
         uint256 stakeAmount;
+        uint256 totalAmount;
     }
 
     mapping(address => particpant) public particpants;
@@ -79,6 +80,8 @@ contract SimpleContractAgreement {
         return employer;
     }
 
+    // set the employer or employee and commit the stake amount to the contract. the employer also c
+    // commits the payment amount to the contract.
     function setParticpant(string memory _type)
         public
         payable
@@ -90,15 +93,16 @@ contract SimpleContractAgreement {
         ) {
             require(block.timestamp < startDate);
             require(
-                msg.value > (stakeAmount + paymentAmount),
-                "Insufficent amount"
+                msg.value == (stakeAmount + paymentAmount),
+                "Insufficent transfer: Employer needs to send stake + payment amount"
             );
             emit Received(msg.sender, msg.value);
             particpants[msg.sender].particpantType = _type;
             particpants[msg.sender].isStake = true;
             particpants[msg.sender].particpantAddr = msg.sender;
             particpants[msg.sender].isEmployer = true;
-            particpants[msg.sender].stakeAmount = msg.value;
+            particpants[msg.sender].stakeAmount = msg.value - paymentAmount;
+            particpants[msg.sender].totalAmount = msg.value;
         }
         if (
             keccak256(abi.encodePacked((_type))) ==
@@ -112,7 +116,9 @@ contract SimpleContractAgreement {
             particpants[msg.sender].isStake = true;
             particpants[msg.sender].particpantAddr = msg.sender;
             particpants[msg.sender].isEmployer = false;
-            particpants[msg.sender].stakeAmount = msg.value;
+            particpants[msg.sender].stakeAmount = stakeAmount;
+            particpants[msg.sender].totalAmount = msg.value;
+
             employeeCounter += 1;
         }
     }
