@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
 // have they both signed and does the data match
