@@ -13,10 +13,10 @@ contract SimpleContractAgreement {
     uint256 tempEndDate = 0;
     uint256 employeeCounter = 0;
     uint256 paymentAmount = 0;
-    bool employerDispute = false;
+    bool particpantDispute = false;
     uint256 stakeAmount = 0;
     uint256 contrtMonths = 0;
-    uint156 particpantID = 0;
+    uint256 particpantID = 0;
     event Received(address, uint256);
     event ModifyMismatch(uint256, uint256, uint256, uint256, string);
 
@@ -38,7 +38,7 @@ contract SimpleContractAgreement {
 
     struct particpant {
         string particpantType;
-        bool isStake;
+        bool hasStake;
         address particpantAddr;
         bool isEmployer;
         uint256 stakeAmount;
@@ -75,51 +75,74 @@ contract SimpleContractAgreement {
 
     // withdraw function allows particpants to withdraw payment and stake for Employees
     // and stake for employers
-    function withdraw(string memory _type)
-        public
-        payable
-        particpantTypeAllowed(_type)
-    {
+    function withdraw() public payable particpantsOnly {
         require(
             endDate != 0 &&
                 block.timestamp >= endDate &&
-                employerDispute == false
+                particpantDispute == false
         );
-        if (
-            keccak256(abi.encodePacked((_type))) ==
-            keccak256(abi.encodePacked(("Employer"))) &&
-            keccak256(abi.encodePacked("Employer")) ==
-            keccak256(abi.encodePacked(particpants[msg.sender].particpantType))
-        ) {
+        if (msg.sender == employer) {
             address payable receiver = payable(msg.sender);
             uint256 stake = particpants[msg.sender].stakeAmount;
             receiver.transfer(stake);
-            particpants[msg.sender].stakeAmount = 0;
+            resetParticpants(false);
         }
-        if (
-            keccak256(abi.encodePacked((_type))) ==
-            keccak256(abi.encodePacked(("Employee"))) &&
-            keccak256(abi.encodePacked("Employee")) ==
-            keccak256(abi.encodePacked(particpants[msg.sender].particpantType))
-        ) {
+        if (msg.sender == employee) {
             address payable receiver = payable(msg.sender);
             uint256 stake = particpants[msg.sender].stakeAmount;
             receiver.transfer(stake + paymentAmount);
-            particpants[msg.sender].stakeAmount = 0;
+            resetParticpants(false);
         }
     }
 
     // if the contract hasnt started yet, send both back their stake
     // if the contract start date has passed but only one participant
     // if the contract has started but one participant needs to withdraw from obligations
-    function terminate(string memory _type) public payable particpantsOnly {
+    function terminate() public payable particpantsOnly {
         if (startDate < block.timestamp) {
             for (uint256 index = 0; index < addresses.length; index++) {
-                address payable receiver = addresses[index];
-                uint256 stake = particpants[msg.sender].stakeAmount;
-                receiver.transfer(stake);
-                particpants[msg.sender].stakeAmount = 0;
-                addresses[index] = 0;
+                address payable _receiver = addresses[index];
+                uint256 _amount = particpants[msg.sender].totalAmount;
+                _receiver.transfer(_amount);
+            }
+            resetParticpants(true);
+        }
+        if (
+            (particpants[msg.sender].hasStake) && (startDate > block.timestamp)
+        ) {
+            address otherParticpant = getOtherParticpant();
+            if (!particpants[otherParticpant].hasStake) {
+                address payable _receiver = payable(msg.sender);
+                uint256 _amount = particpants[msg.sender].totalAmount;
+                _receiver.transfer(_amount);
+            }
+            resetParticpants(true);
+        }
+    }
+
+    function getOtherParticpant() private view returns (address addr) {
+        for (uint256 index = 0; index < addresses.length; index++) {
+            if (addresses[index] != msg.sender) {
+                return addresses[index];
+            }
+        }
+    }
+
+    function resetParticpants(bool _all) private {
+        if (_all) {
+            for (uint256 index = 0; index < addresses.length; index++) {
+                particpants[addresses[index]].stakeAmount = 0;
+                particpants[addresses[index]].totalAmount = 0;
+                particpants[addresses[index]].hasStake = false;
+            }
+            addresses = new address payable[](0);
+        } else {
+            for (uint256 index = 0; index < addresses.length; index++) {
+                if (addresses[index] == msg.sender) {
+                    particpants[addresses[index]].stakeAmount = 0;
+                    particpants[addresses[index]].totalAmount = 0;
+                    particpants[addresses[index]].hasStake = false;
+                }
             }
         }
     }
@@ -127,15 +150,8 @@ contract SimpleContractAgreement {
     // set the employer or employee and commit the stake amount to the contract. the employer also c
     // commits the payment amount to the contract.
     // You can only set particpant if the contract hasnt started yet
-    function setParticpant(string memory _type)
-        public
-        payable
-        particpantTypeAllowed(_type)
-    {
-        if (
-            keccak256(abi.encodePacked((_type))) ==
-            keccak256(abi.encodePacked(("Employer")))
-        ) {
+    function setParticpant(string memory _type) public payable particpantsOnly {
+        if (msg.sender == employer) {
             require(block.timestamp < startDate);
             require(
                 msg.value == (stakeAmount + paymentAmount),
@@ -143,29 +159,26 @@ contract SimpleContractAgreement {
             );
             emit Received(msg.sender, msg.value);
             particpants[msg.sender].particpantType = _type;
-            particpants[msg.sender].isStake = true;
+            particpants[msg.sender].hasStake = true;
             particpants[msg.sender].particpantAddr = msg.sender;
             particpants[msg.sender].isEmployer = true;
             particpants[msg.sender].stakeAmount = msg.value - paymentAmount;
             particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = msg.sender;
+            addresses[particpantID] = payable(msg.sender);
             particpantID += 1;
         }
-        if (
-            keccak256(abi.encodePacked((_type))) ==
-            keccak256(abi.encodePacked(("Employee")))
-        ) {
+        if (msg.sender == employee) {
             require(block.timestamp < startDate);
             require(employeeCounter < 1);
             require(msg.value > stakeAmount, "Insufficent amount");
             emit Received(msg.sender, msg.value);
             particpants[msg.sender].particpantType = _type;
-            particpants[msg.sender].isStake = true;
+            particpants[msg.sender].hasStake = true;
             particpants[msg.sender].particpantAddr = msg.sender;
             particpants[msg.sender].isEmployer = false;
             particpants[msg.sender].stakeAmount = stakeAmount;
             particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = msg.sender;
+            addresses[particpantID] = payable(msg.sender);
             particpantID += 1;
         }
     }
@@ -180,6 +193,11 @@ contract SimpleContractAgreement {
 
     function getEmployee() public view returns (address) {
         return employee;
+    }
+
+    function setEmployee() public view notEmployer {
+        require(block.timestamp < startDate);
+        employee == msg.sender;
     }
 
     modifier onlyEmployer() {
@@ -215,16 +233,6 @@ contract SimpleContractAgreement {
         require(
             msg.sender != employee,
             "Employee not allowed to call this function"
-        );
-        _;
-    }
-
-    modifier particpantTypeAllowed(string memory _type) {
-        require(
-            keccak256(abi.encodePacked((_type))) ==
-                keccak256(abi.encodePacked(("Employee"))) ||
-                keccak256(abi.encodePacked((_type))) ==
-                keccak256(abi.encodePacked(("Employer")))
         );
         _;
     }
