@@ -2,28 +2,24 @@
 pragma solidity >=0.4.21 <8.10.0;
 
 import "./ModifyDate.sol";
+import "./SimpleContractAgreementInterface.sol";
 
-contract SimpleContractAgreement {
+contract SimpleContractAgreement is SimpleContractAgreementInterface {
     address employer;
     address employee;
-    uint256 maxEmployees = 1;
     uint256 startDate = 0;
     uint256 endDate = 0;
-    uint256 tempStartDate = 0;
-    uint256 tempEndDate = 0;
     uint256 employeeCounter = 0;
     uint256 paymentAmount = 0;
     bool particpantDispute = false;
     uint256 stakeAmount = 0;
-    uint256 contrtMonths = 0;
     uint256 particpantID = 0;
     event Received(address, uint256);
-    event ModifyMismatch(uint256, uint256, uint256, uint256, string);
+    event ModifyMismatch(uint256, uint256, string);
 
     constructor(
         uint256 _paymentAmount,
         uint256 _stakePercent,
-        uint256 _contractMonths,
         uint256 _startDate,
         uint256 _endDate
     ) {
@@ -31,7 +27,6 @@ contract SimpleContractAgreement {
         employer = msg.sender;
         paymentAmount = _paymentAmount;
         stakeAmount = (_stakePercent / 100) * paymentAmount;
-        contrtMonths = _contractMonths;
         startDate = _startDate;
         endDate = _endDate;
     }
@@ -49,9 +44,19 @@ contract SimpleContractAgreement {
 
     mapping(address => particpant) public particpants;
 
-    //give the option to the employer or employee to modify start and end date for the contract
-    //requires signature of both parties
+    /* 
+Input: proposed start and end dates that they want to change to
+Conditions:Give the option to the employer or employee to modify start and end date for the contract
+requires signature of both parties
+can only modify date if start date is in the future, start date is less than end date
+and the initial start hasnt elapsed already
+*/
     function modifyDates(uint256 _start, uint256 _end) public particpantsOnly {
+        require(
+            startDate > block.timestamp &&
+                _start > block.timestamp &&
+                _start < _end
+        );
         uint256[2] memory _tempData = [_start, _end];
         address[2] memory _signatures = [employee, employer];
         ModifyDate date;
@@ -59,9 +64,7 @@ contract SimpleContractAgreement {
             updateDates(_start, _end);
         } else {
             emit ModifyMismatch(
-                tempStartDate,
                 _start,
-                tempEndDate,
                 _end,
                 "Dates do not match, signatures required again"
             );
@@ -73,8 +76,12 @@ contract SimpleContractAgreement {
         endDate = _end;
     }
 
-    // withdraw function allows particpants to withdraw payment and stake for Employees
-    // and stake for employers
+    /* 
+Condition: Sends money to both sender if the contract end date has passed and there isnt a dispute
+withdraw function allows particpants to withdraw payment and stake for Employees
+and stake for employers
+ */
+
     function withdraw() public payable particpantsOnly {
         require(
             endDate != 0 &&
@@ -195,9 +202,11 @@ contract SimpleContractAgreement {
         return employee;
     }
 
-    function setEmployee() public view notEmployer {
+    function setEmployee() public notEmployer {
         require(block.timestamp < startDate);
+        require(employeeCounter == 0);
         employee == msg.sender;
+        employeeCounter += 1;
     }
 
     modifier onlyEmployer() {

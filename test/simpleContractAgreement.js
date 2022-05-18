@@ -1,6 +1,32 @@
 const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
 
 contract("SimpleContractAgreement", accounts => {
+    it("...should set Constructor variables", async () => {
+        const simpleContractInstance = await SimpleContractAgreement.deployed(10000, 10, 1652891070, 1652977470);
+
+        await simpleContractInstance.setEmployer({ from: accounts[0] });
+        // Set Contract Months
+
+        try {
+            await simpleContractInstance.setContractMonths(2, { from: accounts[1] });
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Only Employer allowed to call this function", "The error should be OnlyEmployer error message");
+        }
+        // set contract length as an account that is not the employer
+
+        // set contract length as an account that is the employer
+        await simpleContractInstance.setContractMonths(2, { from: accounts[0] });
+
+        // GetContract Months
+        const months = await simpleContractInstance.getContractMonths.call();
+
+        assert.equal(months, 2, "Contract Months is now 2");
+    });
+});
+
+
+contract("SimpleContractAgreement", accounts => {
     it("...should set Contract Months as 2", async () => {
         const simpleContractInstance = await SimpleContractAgreement.deployed();
 
