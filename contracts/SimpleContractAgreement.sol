@@ -23,8 +23,8 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
         uint256 _startDate,
         uint256 _endDate
     ) {
-        require(_startDate < _endDate);
-        employer = msg.sender;
+        require(_startDate < _endDate && _startDate > block.timestamp);
+        employer = payable(msg.sender);
         paymentAmount = _paymentAmount;
         stakeAmount = (_stakePercent / 100) * paymentAmount;
         startDate = _startDate;
@@ -89,9 +89,8 @@ and stake for employers
                 particpantDispute == false
         );
         if (msg.sender == employer) {
-            address payable receiver = payable(msg.sender);
             uint256 stake = particpants[msg.sender].stakeAmount;
-            receiver.transfer(stake);
+            payable(msg.sender).transfer(stake);
             resetParticpants(false);
         }
         if (msg.sender == employee) {
@@ -200,6 +199,14 @@ and stake for employers
 
     function getEmployee() public view returns (address) {
         return employee;
+    }
+
+    function getStartDate() public view returns (uint256) {
+        return startDate;
+    }
+
+    function getEndDate() public view returns (uint256) {
+        return endDate;
     }
 
     function setEmployee() public notEmployer {
