@@ -8,5 +8,5 @@ interface SimpleContractAgreementInterface {
 
     function terminate() external payable;
 
-    function setParticpant(string memory _type) external payable;
+    function setParticpantFunds() external payable;
 }

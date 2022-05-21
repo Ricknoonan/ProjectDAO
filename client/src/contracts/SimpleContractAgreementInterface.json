@@ -1,0 +1,493 @@
+{
+  "contractName": "SimpleContractAgreementInterface",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_start",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_end",
+          "type": "uint256"
+        }
+      ],
+      "name": "modifyDates",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "terminate",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "setParticpantFunds",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_start\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_end\",\"type\":\"uint256\"}],\"name\":\"modifyDates\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"setParticpantFunds\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"terminate\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleContractAgreementInterface.sol\":\"SimpleContractAgreementInterface\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleContractAgreementInterface.sol\":{\"keccak256\":\"0x056b7c840179df92455d6d57d249a82b1a66d1633a548f364726ed3c9a0f4186\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://44ec896d9b87770b0ea8d36794f0c5ea9037f26a57fd781d3c4cb1f6ed9af12f\",\"dweb:/ipfs/QmWU27hnJNxizBJMeT5tSkMn5cpbG2NBoEJvkd2wfeamdp\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity >=0.4.21 <8.10.0;\r\n\r\ninterface SimpleContractAgreementInterface {\r\n    function modifyDates(uint256 _start, uint256 _end) external;\r\n\r\n    function withdraw() external payable;\r\n\r\n    function terminate() external payable;\r\n\r\n    function setParticpantFunds() external payable;\r\n}\r\n",
+  "sourcePath": "C:\\Users\\richi\\Solidity\\ProjectDAO\\contracts\\SimpleContractAgreementInterface.sol",
+  "ast": {
+    "absolutePath": "/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleContractAgreementInterface.sol",
+    "exportedSymbols": {
+      "SimpleContractAgreementInterface": [
+        1075
+      ]
+    },
+    "id": 1076,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1058,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "8.10",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:33:3"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SimpleContractAgreementInterface",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 1075,
+        "linearizedBaseContracts": [
+          1075
+        ],
+        "name": "SimpleContractAgreementInterface",
+        "nameLocation": "80:32:3",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "68b46b29",
+            "id": 1065,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "modifyDates",
+            "nameLocation": "129:11:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1063,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1060,
+                  "mutability": "mutable",
+                  "name": "_start",
+                  "nameLocation": "149:6:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1065,
+                  "src": "141:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1059,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "141:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1062,
+                  "mutability": "mutable",
+                  "name": "_end",
+                  "nameLocation": "165:4:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1065,
+                  "src": "157:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1061,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "157:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "140:30:3"
+            },
+            "returnParameters": {
+              "id": 1064,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "179:0:3"
+            },
+            "scope": 1075,
+            "src": "120:60:3",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3ccfd60b",
+            "id": 1068,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdraw",
+            "nameLocation": "197:8:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1066,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "205:2:3"
+            },
+            "returnParameters": {
+              "id": 1067,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "224:0:3"
+            },
+            "scope": 1075,
+            "src": "188:37:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "0c08bf88",
+            "id": 1071,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "terminate",
+            "nameLocation": "242:9:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1069,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "251:2:3"
+            },
+            "returnParameters": {
+              "id": 1070,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "270:0:3"
+            },
+            "scope": 1075,
+            "src": "233:38:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "cb2c5452",
+            "id": 1074,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setParticpantFunds",
+            "nameLocation": "288:18:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1072,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "306:2:3"
+            },
+            "returnParameters": {
+              "id": 1073,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "325:0:3"
+            },
+            "scope": 1075,
+            "src": "279:47:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1076,
+        "src": "70:259:3",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:298:3"
+  },
+  "legacyAST": {
+    "absolutePath": "/C/Users/richi/Solidity/ProjectDAO/contracts/SimpleContractAgreementInterface.sol",
+    "exportedSymbols": {
+      "SimpleContractAgreementInterface": [
+        1075
+      ]
+    },
+    "id": 1076,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1058,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "8.10",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:33:3"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SimpleContractAgreementInterface",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 1075,
+        "linearizedBaseContracts": [
+          1075
+        ],
+        "name": "SimpleContractAgreementInterface",
+        "nameLocation": "80:32:3",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "68b46b29",
+            "id": 1065,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "modifyDates",
+            "nameLocation": "129:11:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1063,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1060,
+                  "mutability": "mutable",
+                  "name": "_start",
+                  "nameLocation": "149:6:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1065,
+                  "src": "141:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1059,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "141:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1062,
+                  "mutability": "mutable",
+                  "name": "_end",
+                  "nameLocation": "165:4:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1065,
+                  "src": "157:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1061,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "157:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "140:30:3"
+            },
+            "returnParameters": {
+              "id": 1064,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "179:0:3"
+            },
+            "scope": 1075,
+            "src": "120:60:3",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3ccfd60b",
+            "id": 1068,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdraw",
+            "nameLocation": "197:8:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1066,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "205:2:3"
+            },
+            "returnParameters": {
+              "id": 1067,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "224:0:3"
+            },
+            "scope": 1075,
+            "src": "188:37:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "0c08bf88",
+            "id": 1071,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "terminate",
+            "nameLocation": "242:9:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1069,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "251:2:3"
+            },
+            "returnParameters": {
+              "id": 1070,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "270:0:3"
+            },
+            "scope": 1075,
+            "src": "233:38:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "cb2c5452",
+            "id": 1074,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setParticpantFunds",
+            "nameLocation": "288:18:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1072,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "306:2:3"
+            },
+            "returnParameters": {
+              "id": 1073,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "325:0:3"
+            },
+            "scope": 1075,
+            "src": "279:47:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1076,
+        "src": "70:259:3",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:298:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.1",
+  "updatedAt": "2022-05-19T12:08:01.800Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

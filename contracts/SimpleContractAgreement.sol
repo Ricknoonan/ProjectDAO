@@ -9,26 +9,31 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     address employee;
     uint256 startDate = 0;
     uint256 endDate = 0;
-    uint256 employeeCounter = 0;
+    uint256 public employeeCounter = 0;
     uint256 paymentAmount = 0;
     bool particpantDispute = false;
-    uint256 stakeAmount = 0;
+    uint256 public stakeAmount = 0;
+    uint32 public stakePercent = 0;
     uint256 particpantID = 0;
     event Received(address, uint256);
     event ModifyMismatch(uint256, uint256, string);
 
     constructor(
         uint256 _paymentAmount,
-        uint256 _stakePercent,
+        uint32 _stakePercent,
         uint256 _startDate,
         uint256 _endDate
     ) {
         require(_startDate < _endDate && _startDate > block.timestamp);
         employer = payable(msg.sender);
         paymentAmount = _paymentAmount;
-        stakeAmount = (_stakePercent / 100) * paymentAmount;
+        stakeAmount = ((_stakePercent / 100) * _paymentAmount);
+        stakePercent = _stakePercent;
         startDate = _startDate;
         endDate = _endDate;
+        particpants[msg.sender].hasStake = false;
+        particpants[msg.sender].particpantAddr = msg.sender;
+        particpants[msg.sender].isEmployer = true;
     }
 
     struct particpant {
@@ -44,8 +49,50 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
 
     mapping(address => particpant) public particpants;
 
-    /* 
-Input: proposed start and end dates that they want to change to
+    function setEmployee() public notEmployer {
+        require(block.timestamp < startDate);
+        require(employeeCounter == 0);
+        employee == msg.sender;
+        employeeCounter += 1;
+        particpants[msg.sender].hasStake = false;
+        particpants[msg.sender].particpantAddr = msg.sender;
+        particpants[msg.sender].isEmployer = false;
+    }
+
+    /*Condition: set the employer or employee and commit the stake amount to the contract. the employer also c
+commits the payment amount to the contract.
+You can only set particpant if the contract hasnt started yet
+*/
+    function setParticpantFunds() public payable particpantsOnly {
+        if (msg.sender == employer) {
+            require(block.timestamp < startDate);
+            require(
+                msg.value == (stakeAmount + paymentAmount),
+                "Insufficent amount"
+            );
+            emit Received(msg.sender, msg.value);
+            particpants[msg.sender].hasStake = true;
+            particpants[msg.sender].stakeAmount = msg.value - paymentAmount;
+            particpants[msg.sender].totalAmount = msg.value;
+            addresses[particpantID] = payable(msg.sender);
+            particpantID += 1;
+        }
+        if (msg.sender == employee) {
+            require(block.timestamp < startDate);
+            require(employeeCounter < 1);
+            require(msg.value > stakeAmount, "Insufficent amount");
+            emit Received(msg.sender, msg.value);
+            particpants[msg.sender].hasStake = true;
+            particpants[msg.sender].particpantAddr = msg.sender;
+            particpants[msg.sender].isEmployer = false;
+            particpants[msg.sender].stakeAmount = stakeAmount;
+            particpants[msg.sender].totalAmount = msg.value;
+            addresses[particpantID] = payable(msg.sender);
+            particpantID += 1;
+        }
+    }
+
+    /* Input: proposed start and end dates that they want to change to
 Conditions:Give the option to the employer or employee to modify start and end date for the contract
 requires signature of both parties
 can only modify date if start date is in the future, start date is less than end date
@@ -76,8 +123,7 @@ and the initial start hasnt elapsed already
         endDate = _end;
     }
 
-    /* 
-Condition: Sends money to both sender if the contract end date has passed and there isnt a dispute
+    /* Condition: Sends money to both sender if the contract end date has passed and there isnt a dispute
 withdraw function allows particpants to withdraw payment and stake for Employees
 and stake for employers
  */
@@ -153,44 +199,20 @@ and stake for employers
         }
     }
 
-    // set the employer or employee and commit the stake amount to the contract. the employer also c
-    // commits the payment amount to the contract.
-    // You can only set particpant if the contract hasnt started yet
-    function setParticpant(string memory _type) public payable particpantsOnly {
-        if (msg.sender == employer) {
-            require(block.timestamp < startDate);
-            require(
-                msg.value == (stakeAmount + paymentAmount),
-                "Insufficent transfer: Employer needs to send stake + payment amount"
-            );
-            emit Received(msg.sender, msg.value);
-            particpants[msg.sender].particpantType = _type;
-            particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].particpantAddr = msg.sender;
-            particpants[msg.sender].isEmployer = true;
-            particpants[msg.sender].stakeAmount = msg.value - paymentAmount;
-            particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = payable(msg.sender);
-            particpantID += 1;
-        }
-        if (msg.sender == employee) {
-            require(block.timestamp < startDate);
-            require(employeeCounter < 1);
-            require(msg.value > stakeAmount, "Insufficent amount");
-            emit Received(msg.sender, msg.value);
-            particpants[msg.sender].particpantType = _type;
-            particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].particpantAddr = msg.sender;
-            particpants[msg.sender].isEmployer = false;
-            particpants[msg.sender].stakeAmount = stakeAmount;
-            particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = payable(msg.sender);
-            particpantID += 1;
-        }
+    function getPaymentAmount() public view returns (uint256) {
+        return paymentAmount;
     }
 
-    function getPaymentAmountUSD() public view returns (uint256) {
-        return paymentAmount;
+    function getStakeAmount() public view returns (uint256) {
+        return stakeAmount;
+    }
+
+    function getStakePercent() public view returns (uint32) {
+        return stakePercent;
+    }
+
+    function getEmployeeCounter() public view returns (uint256) {
+        return employeeCounter;
     }
 
     function getEmployer() public view returns (address) {
@@ -207,13 +229,6 @@ and stake for employers
 
     function getEndDate() public view returns (uint256) {
         return endDate;
-    }
-
-    function setEmployee() public notEmployer {
-        require(block.timestamp < startDate);
-        require(employeeCounter == 0);
-        employee == msg.sender;
-        employeeCounter += 1;
     }
 
     modifier onlyEmployer() {

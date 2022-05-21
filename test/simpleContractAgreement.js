@@ -2,21 +2,49 @@ const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol
 
 contract("SimpleContractAgreement", accounts => {
     it("...should set Constructor variables", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.deployed();
-
-        // Set Contract Months
-        //require(_startDate < _endDate);
-        //employer = msg.sender;
-        //paymentAmount = _paymentAmount;
-        //stakeAmount = (_stakePercent / 100) * paymentAmount;
+        let simpleContractInstance = await SimpleContractAgreement.deployed();
 
         //StartDate
-        const startDate = await simpleContractInstance.getStartDate.call();
-        assert.equal(startDate, 1655609942, "Start Date is 1655609942");
+        const startDate = await simpleContractInstance.getStartDate();
+        assert.equal(startDate, 1655609942, "starDate is 1655609942");
 
         //EndDate
-        const endDate = await simpleContractInstance.getEndDate.call();
-        assert.equal(endDate, 1655869142, "end Date is 1655869142");
+        const endDate = await simpleContractInstance.getEndDate();
+        assert.equal(endDate, 1655869142, "endDate is 1655869142");
+
+        //Payment Amount
+        const paymentAmount = await simpleContractInstance.getPaymentAmount();
+        assert.equal(paymentAmount, 10000, "paymentAmount is 10000");
+
+        //Stake Amount
+        let stakeAmount = await simpleContractInstance.getStakePercent();
+        assert.equal(stakeAmount, 10, "stakeAmount is 1000");
+
+    });
+});
+
+contract("SimpleContractAgreement", accounts => {
+    it("...should set the employee", async () => {
+        let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
+
+        await simpleContractInstance.setEmployee({ from: accounts[1] });
+
+        // Check Stake
+        let particpant = await simpleContractInstance.particpants(accounts[1])
+        assert.equal(particpant.hasStake, false, ("Stake should be set to fault when initialising employee"))
+
+        // Check Employee address
+        let employeeAddr = await simpleContractInstance.particpants(accounts[1])
+        assert.equal(employeeAddr.particpantAddr, accounts[1], ("Set with msg sender address"))
+
+        // Check is Employer
+        let isEmployer = await simpleContractInstance.particpants(accounts[1])
+        assert.equal(isEmployer.isEmployer, false, ("Set with is employer to false"))
+
+        // Check is Employer
+        let employerCounter = await simpleContractInstance.getEmployeeCounter()
+        assert.equal(employerCounter, 1, ("Employee counter should now be one"))
+
 
     });
 });
