@@ -1,4 +1,8 @@
 const path = require("path");
+const json = require('./mnemonic.json')
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const mnemonic = json.API_Key;
+
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -7,6 +11,12 @@ module.exports = {
   networks: {
     develop: {
       port: 8545
+    },
+    ropsten: {
+      provider: function () {
+        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/099603b389024515b90275bedf2c7faa")
+      },
+      network_id: 3
     }
   },
   compilers: {
