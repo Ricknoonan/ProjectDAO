@@ -49,6 +49,9 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
 
     mapping(address => particpant) public particpants;
 
+    /*This functions allows employees to "apply" and set themseleves as employee in
+     * the contract without actually commiting funds
+     */
     function setEmployee() public notEmployer {
         require(block.timestamp < startDate);
         require(employeeCounter == 0);
@@ -60,14 +63,14 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     }
 
     /*Condition: set the employer or employee and commit the stake amount to the contract. the employer also c
-commits the payment amount to the contract.
-You can only set particpant if the contract hasnt started yet
-*/
+     * commits the payment amount to the contract.
+     * You can only set particpant if the contract hasnt started yet
+     */
     function setParticpantFunds() public payable particpantsOnly {
         if (msg.sender == employer) {
             require(block.timestamp < startDate);
             require(
-                msg.value == (stakeAmount + paymentAmount),
+                msg.value >= (stakeAmount + paymentAmount),
                 "Insufficent amount"
             );
             emit Received(msg.sender, msg.value);
@@ -80,11 +83,8 @@ You can only set particpant if the contract hasnt started yet
         if (msg.sender == employee) {
             require(block.timestamp < startDate);
             require(employeeCounter < 1);
-            require(msg.value > stakeAmount, "Insufficent amount");
+            require(msg.value >= stakeAmount, "Insufficent amount");
             emit Received(msg.sender, msg.value);
-            particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].particpantAddr = msg.sender;
-            particpants[msg.sender].isEmployer = false;
             particpants[msg.sender].stakeAmount = stakeAmount;
             particpants[msg.sender].totalAmount = msg.value;
             addresses[particpantID] = payable(msg.sender);

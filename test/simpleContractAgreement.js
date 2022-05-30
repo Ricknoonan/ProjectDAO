@@ -1,6 +1,8 @@
+const assert = require("assert");
+
 const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
 
-contract("SimpleContractAgreement", accounts => {
+contract("Initial State", accounts => {
     it("...should set Constructor variables", async () => {
         let simpleContractInstance = await SimpleContractAgreement.deployed();
 
@@ -23,7 +25,7 @@ contract("SimpleContractAgreement", accounts => {
     });
 });
 
-contract("SimpleContractAgreement", accounts => {
+contract("Employee", accounts => {
     it("...should set the employee", async () => {
         let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
 
@@ -45,36 +47,94 @@ contract("SimpleContractAgreement", accounts => {
         let employerCounter = await simpleContractInstance.getEmployeeCounter()
         assert.equal(employerCounter, 1, ("Employee counter should now be one"))
 
-
     });
 });
 
-/*
-contract("SimpleContractAgreement", accounts => {
-    it("...should set Contract Months as 2", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.deployed();
+contract("Employer Fund", accounts => {
+    it("...should allow the employer to fund the contract with the stake and payment amount", async () => {
+        let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
 
-        await simpleContractInstance.setEmployer({ from: accounts[0] });
-        // Set Contract Months
+        let amountPass = 110000;
 
+        //send stake and payment amount to contract
+        await simpleContractInstance.setParticpantFunds().send(amountPass, { from: accounts[0] })
+
+        // Check Stake
+        let particpant = await simpleContractInstance.particpants(accounts[0])
+        assert.equal(particpant.hasStake, true, ("Stake should be set to true due to setParticpantFunds"))
+
+
+        // Check employer sends correct amount
+        assert.equal(particpant.stakeAmount, 1000, ("Stake amount should be 10% of the payment amount"))
+        assert.equal(particpant.totalAmount, 11000, ("Total amout of sent by "))
+
+    });
+
+    it("...should not allow the employer to fund the contract with the too low of stake and payment amount", async () => {
+        let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
+
+        let amountFail = 900;
+
+        //send stake and payment amount to contract
         try {
-            await simpleContractInstance.setContractMonths(2, { from: accounts[1] });
+            await simpleContractInstance.setParticpantFunds().send(amountFail, { from: accounts[0] })
             assert.fail("The transaction should have thrown an error");
         } catch (err) {
-            assert.include(err.message, "Only Employer allowed to call this function", "The error should be OnlyEmployer error message");
+            assert.include(err.message, "Insufficent amount", "900 is below the stake and payment amount");
         }
-        // set contract length as an account that is not the employer
 
-        // set contract length as an account that is the employer
-        await simpleContractInstance.setContractMonths(2, { from: accounts[0] });
+    });
 
-        // GetContract Months
-        const months = await simpleContractInstance.getContractMonths.call();
 
-        assert.equal(months, 2, "Contract Months is now 2");
+});
+
+contract("Employee Fund", accounts => {
+    it("...should allow the employee to fund the contract with the stake", async () => {
+        let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
+
+        await simpleContractInstance.setEmployee({ from: accounts[1] });
+
+        let amountPass = 1000;
+
+        //send stake and payment amount to contract
+        await simpleContractInstance.setParticpantFunds().send(amountPass, { from: accounts[1] })
+    });
+
+    it("...should not allow the employer to fund the contract with the too low of stake and payment amount", async () => {
+        let simpleContractInstance = await SimpleContractAgreement.deployed({ from: accounts[0] });
+
+        let amountFail = 900;
+
+        //send stake and payment amount to contract
+        try {
+            await simpleContractInstance.setParticpantFunds().send(amountPass, { from: accounts[1] })
+            assert.fail("The transaction should have thrown an error");
+        } catch (err) {
+            assert.include(err.message, "Insufficent amount", "900 is below the stake and payment amount");
+        }
+
+    });
+
+});
+
+contract("Modify Date", accounts => {
+    it("should allow state dates to be changed once both particpants have signed with same dates", async () => {
+        const simpleContractInstance = await SimpleContractAgreement.new(10000, 10, 1655609942, 1655869142, { from: accounts[0] });
+
+        await simpleContractInstance.setEmployee({ from: accounts[1] });
+        let _startDate = 1655609945;
+        let _endDate = 1655869146;
+        await simpleContractInstance.modifyDates({ from: accounts[0] }, _startDate, _endDate)
+        await simpleContractInstance.modifyDates({ from: accounts[1] }, _startDate, _endDate)
+        const startDate = simpleContractInstance.getStartDate()
+        assert.equal(startDate, _startDate, "state start date should be updated now")
+
+
     });
 });
 
+
+/*
 contract("SimpleContractAgreement", accounts => {
     it("...should not set Employer and then set Employee from the same account", async () => {
         const simpleContractInstance = await SimpleContractAgreement.deployed();

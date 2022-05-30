@@ -1,7 +1,6 @@
 const path = require("path");
-const json = require('./mnemonic.json')
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-const mnemonic = json.API_Key;
+const mnemonic = "apple"
 
 
 module.exports = {
