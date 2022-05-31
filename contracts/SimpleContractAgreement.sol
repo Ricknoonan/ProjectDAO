@@ -20,15 +20,14 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
 
     constructor(
         uint256 _paymentAmount,
-        uint32 _stakePercent,
+        uint256 _stakeAmount,
         uint256 _startDate,
         uint256 _endDate
     ) {
         require(_startDate < _endDate && _startDate > block.timestamp);
         employer = payable(msg.sender);
         paymentAmount = _paymentAmount;
-        stakeAmount = ((_stakePercent / 100) * _paymentAmount);
-        stakePercent = _stakePercent;
+        stakeAmount = _stakeAmount;
         startDate = _startDate;
         endDate = _endDate;
         particpants[msg.sender].hasStake = false;
@@ -37,6 +36,7 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     }
 
     struct particpant {
+        uint256 id;
         string particpantType;
         bool hasStake;
         address particpantAddr;
@@ -55,7 +55,7 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     function setEmployee() public notEmployer {
         require(block.timestamp < startDate);
         require(employeeCounter == 0);
-        employee == msg.sender;
+        employee = msg.sender;
         employeeCounter += 1;
         particpants[msg.sender].hasStake = false;
         particpants[msg.sender].particpantAddr = msg.sender;
@@ -68,26 +68,28 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
      */
     function setParticpantFunds() public payable particpantsOnly {
         if (msg.sender == employer) {
-            require(block.timestamp < startDate);
+            require(block.timestamp < startDate, "must be before start date");
             require(
                 msg.value >= (stakeAmount + paymentAmount),
                 "Insufficent amount"
             );
             emit Received(msg.sender, msg.value);
             particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].stakeAmount = msg.value - paymentAmount;
+            particpants[msg.sender].stakeAmount = stakeAmount;
             particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = payable(msg.sender);
+            particpants[msg.sender].id = particpantID;
+            addresses.push(payable(msg.sender));
             particpantID += 1;
         }
         if (msg.sender == employee) {
             require(block.timestamp < startDate);
-            require(employeeCounter < 1);
             require(msg.value >= stakeAmount, "Insufficent amount");
             emit Received(msg.sender, msg.value);
+            particpants[msg.sender].hasStake = true;
+            particpants[msg.sender].id = particpantID;
             particpants[msg.sender].stakeAmount = stakeAmount;
             particpants[msg.sender].totalAmount = msg.value;
-            addresses[particpantID] = payable(msg.sender);
+            addresses.push(payable(msg.sender));
             particpantID += 1;
         }
     }
@@ -240,7 +242,10 @@ and stake for employers
     }
 
     modifier particpantsOnly() {
-        require(msg.sender == employee || msg.sender == employer);
+        require(
+            msg.sender == employee || msg.sender == employer,
+            "Particpants Only"
+        );
         _;
     }
 
