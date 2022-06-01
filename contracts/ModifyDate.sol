@@ -19,11 +19,15 @@ Returns: true if the proposal and the temps match
         uint256[2] memory _tempDate,
         address[2] memory _signatures
     ) public returns (bool success) {
-        require(!modifyContractDate[msg.sender]);
+        require(msg.sender != _signatures[0], "testing");
+        require(
+            modifyContractDate[msg.sender] == false,
+            "Address has already signed"
+        );
         modifyContractDate[msg.sender] = true;
         if (modifyTempArr[0] == 0 && modifyTempArr[1] == 0) {
-            modifyTempArr[0] = _tempDate[0];
-            modifyTempArr[1] = _tempDate[1];
+            modifyTempArr.push(_tempDate[0]);
+            modifyTempArr.push(_tempDate[1]);
         } else {
             require(
                 modifyContractDate[_signatures[0]] &&

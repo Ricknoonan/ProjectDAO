@@ -1,8 +1,6 @@
-const assert = require("assert");
-
 const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
 
-contract("Initial State", accounts => {
+/*contract("Initial State", accounts => {
     it("...should set Constructor variables", async () => {
         const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
 
@@ -112,9 +110,11 @@ contract("Employee Fund", accounts => {
 
         let amountFail = 0;
 
+        await simpleContractInstance.setEmployee({ from: accounts[1] });
+
         //send stake and payment amount to contract
         try {
-            await simpleContractInstance.setParticpantFunds({ from: accounts[1], amountFail })
+            await simpleContractInstance.setParticpantFunds({ from: accounts[1], value: amountFail })
             assert.fail("The transaction should have thrown an error");
         } catch (err) {
             assert.include(err.message, "Insufficent amount", "900 is below the stake and payment amount");
@@ -122,77 +122,20 @@ contract("Employee Fund", accounts => {
 
     });
 
-});
+});*/
 
-/* contract("Modify Date", accounts => {
+contract("Modify Date", accounts => {
     it("should allow state dates to be changed once both particpants have signed with same dates", async () => {
         const simpleContractInstance = await SimpleContractAgreement.new(10000, 10, 1655609942, 1655869142, { from: accounts[0] });
 
         await simpleContractInstance.setEmployee({ from: accounts[1] });
-        let _startDate = 1655609945;
-        let _endDate = 1655869146;
-        await simpleContractInstance.modifyDates({ from: accounts[0] }, _startDate, _endDate)
-        await simpleContractInstance.modifyDates({ from: accounts[1] }, _startDate, _endDate)
-        const startDate = simpleContractInstance.getStartDate()
+        let _startDate = 1664659203;
+        let _endDate = 1669929603;
+        await simpleContractInstance.modifyDates(_startDate, _endDate, {
+            from: accounts[0], gas: 5000000
+        })
+        await simpleContractInstance.modifyDates(_startDate, _endDate, { from: accounts[1], gas: 5000000 })
+        const startDate = await simpleContractInstance.getStartDate()
         assert.equal(startDate, _startDate, "state start date should be updated now")
-
-
     });
-}); */
-
-
-/*
-contract("SimpleContractAgreement", accounts => {
-    it("...should not set Employer and then set Employee from the same account", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.deployed();
-
-        await simpleContractInstance.setEmployer({ from: accounts[0] });
-
-        try {
-            await simpleContractInstance.setEmployee({ from: accounts[0] });
-            assert.fail("The transaction should have thrown an error");
-        } catch (err) {
-            assert.include(err.message, "Employer not allowed to call this function", "The error should be notEmployer error message");
-        }
-
-    });
-});
-
-contract("SimpleContractAgreement", accounts => {
-    it("...should not set Employee and then set Employer from the same account", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.deployed();
-
-        await simpleContractInstance.setEmployee({ from: accounts[0] });
-
-        try {
-            await simpleContractInstance.setEmployer({ from: accounts[0] });
-            assert.fail("The transaction should have thrown an error");
-        } catch (err) {
-            assert.include(err.message, "Employee not allowed to call this function", "The error should be notEmployee error message");
-        }
-
-    });
-});
-
-contract("SimpleContractAgreement", accounts => {
-    it("...should set Payment amount as 10000", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.deployed();
-
-        await simpleContractInstance.setEmployer({ from: accounts[0] });
-
-        try {
-            await simpleContractInstance.setPaymentAmount(10000, { from: accounts[1] });
-            assert.fail("The transaction should have thrown an error");
-        } catch (err) {
-            assert.include(err.message, "Only Employer allowed to call this function", "The error should be OnlyEmployer error message");
-        }
-
-        await simpleContractInstance.setPaymentAmount(10000, { from: accounts[0] });
-
-        const months = await simpleContractInstance.getPaymentAmount.call();
-
-        assert.equal(months, 10000, "Payment amount is now 10000");
-    });
-});
-
-*/
+}); 

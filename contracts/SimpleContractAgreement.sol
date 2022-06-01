@@ -7,7 +7,7 @@ import "./SimpleContractAgreementInterface.sol";
 contract SimpleContractAgreement is SimpleContractAgreementInterface {
     address employer;
     address employee;
-    uint256 startDate = 0;
+    uint256 public startDate = 0;
     uint256 endDate = 0;
     uint256 public employeeCounter = 0;
     uint256 paymentAmount = 0;
@@ -17,6 +17,8 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     uint256 particpantID = 0;
     event Received(address, uint256);
     event ModifyMismatch(uint256, uint256, string);
+    event Log(string);
+    uint256[] modifyTempArr;
 
     constructor(
         uint256 _paymentAmount,
@@ -48,6 +50,8 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     address payable[] addresses;
 
     mapping(address => particpant) public particpants;
+
+    mapping(address => bool) modifyContractDate;
 
     /*This functions allows employees to "apply" and set themseleves as employee in
      * the contract without actually commiting funds
@@ -104,13 +108,16 @@ and the initial start hasnt elapsed already
         require(
             startDate > block.timestamp &&
                 _start > block.timestamp &&
-                _start < _end
+                _start < _end,
+            "Invalid Time"
         );
-        uint256[2] memory _tempData = [_start, _end];
-        address[2] memory _signatures = [employee, employer];
-        ModifyDate date;
-        if (date.modifyDates(_tempData, _signatures)) {
-            updateDates(_start, _end);
+        uint256[2] memory _tempDates;
+        address[2] memory _tempSig;
+        _tempDates = [_start, _end];
+        _tempSig = [employee, employer];
+        if (modifyDate(_tempDates, _tempSig)) {
+            startDate = _start;
+            endDate = _end;
         } else {
             emit ModifyMismatch(
                 _start,
@@ -120,9 +127,38 @@ and the initial start hasnt elapsed already
         }
     }
 
-    function updateDates(uint256 _start, uint256 _end) private {
-        startDate = _start;
-        endDate = _end;
+    function modifyDate(
+        uint256[2] memory _tempDate,
+        address[2] memory _signatures
+    ) public returns (bool success) {
+        require(
+            modifyContractDate[msg.sender] == false,
+            "Address has already signed"
+        );
+        modifyContractDate[msg.sender] = true;
+        if (modifyTempArr[0] == 0 && modifyTempArr[1] == 0) {
+            emit Log("test");
+            modifyTempArr.push(_tempDate[0]);
+            modifyTempArr.push(_tempDate[1]);
+        } else {
+            require(
+                modifyContractDate[_signatures[0]] &&
+                    modifyContractDate[_signatures[1]],
+                "test"
+            );
+            if (
+                modifyTempArr[0] == _tempDate[0] &&
+                modifyTempArr[1] == _tempDate[1]
+            ) {
+                return success = true;
+            } else {
+                modifyContractDate[_signatures[0]] = false;
+                modifyContractDate[_signatures[1]] = false;
+                modifyTempArr[0] = 0;
+                modifyTempArr[1] = 0;
+                return success = false;
+            }
+        }
     }
 
     /* Condition: Sends money to both sender if the contract end date has passed and there isnt a dispute
