@@ -1,6 +1,6 @@
 const path = require("path");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-const mnemonic = "apple"
+const mnemonic = "tseting"
 
 
 module.exports = {
