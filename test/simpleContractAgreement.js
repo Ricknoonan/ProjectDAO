@@ -1,33 +1,10 @@
 const SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
 
-/*contract("Initial State", accounts => {
-    it("...should set Constructor variables", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
-
-        //StartDate
-        const startDate = await simpleContractInstance.getStartDate();
-        assert.equal(startDate, 1655609942, "starDate is 1655609942");
-
-        //EndDate
-        const endDate = await simpleContractInstance.getEndDate();
-        assert.equal(endDate, 1655869142, "endDate is 1655869142");
-
-        //Payment Amount
-        const paymentAmount = await simpleContractInstance.getPaymentAmount();
-        assert.equal(paymentAmount, 10, "paymentAmount is 10");
-
-        //Stake Amount
-        let stakeAmount = await simpleContractInstance.getStakeAmount();
-        assert.equal(stakeAmount, 1, "stakeAmount is 1");
-
-    });
-});
-
 contract("Employee", accounts => {
     it("...should set the employee", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
-
-        await simpleContractInstance.setEmployee({ from: accounts[1] });
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
 
         // Check Stake
         let particpant = await simpleContractInstance.particpants(accounts[1])
@@ -50,10 +27,11 @@ contract("Employee", accounts => {
 
 contract("Employer Fund", accounts => {
     it("...should allow the employer to fund the contract with the stake and payment amount", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
         let amountPass = 11;
 
-        await simpleContractInstance.setEmployee({ from: accounts[1] });
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
 
         //send stake and payment amount to contract
         await simpleContractInstance.setParticpantFunds({ from: accounts[0], value: amountPass })
@@ -70,8 +48,8 @@ contract("Employer Fund", accounts => {
     });
 
     it("...should not allow the employer to fund the contract with the too low of stake and payment amount", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
-
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
         let amountFail = 9;
 
         //send stake and payment amount to contract
@@ -86,9 +64,9 @@ contract("Employer Fund", accounts => {
 
 contract("Employee Fund", accounts => {
     it("...should allow the employee to fund the contract with the stake", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
-
-        await simpleContractInstance.setEmployee({ from: accounts[1] });
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
 
         let amountPass = 1; //gas cost
 
@@ -106,11 +84,11 @@ contract("Employee Fund", accounts => {
     });
 
     it("...should not allow the employer to fund the contract with the too low of stake and payment amount", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10, 1, 1655609942, 1655869142, { from: accounts[0] });
-
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
         let amountFail = 0;
 
-        await simpleContractInstance.setEmployee({ from: accounts[1] });
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
 
         //send stake and payment amount to contract
         try {
@@ -122,20 +100,43 @@ contract("Employee Fund", accounts => {
 
     });
 
-});*/
+});
 
 contract("Modify Date", accounts => {
     it("should allow state dates to be changed once both particpants have signed with same dates", async () => {
-        const simpleContractInstance = await SimpleContractAgreement.new(10000, 10, 1655609942, 1655869142, { from: accounts[0] });
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
 
-        await simpleContractInstance.setEmployee({ from: accounts[1] });
-        let _startDate = 1664659203;
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
+        let _startDate = 1664659205;
         let _endDate = 1669929603;
         await simpleContractInstance.modifyDates(_startDate, _endDate, {
             from: accounts[0], gas: 5000000
         })
         await simpleContractInstance.modifyDates(_startDate, _endDate, { from: accounts[1], gas: 5000000 })
         const startDate = await simpleContractInstance.getStartDate()
-        assert.equal(startDate, _startDate, "state start date should be updated now")
+        const endDate = await simpleContractInstance.getEndDate()
+        assert.equal(startDate, _startDate, "state start date should be updated to new date")
+        assert.equal(endDate, _endDate, "state end date should be updated to new date")
+
+    });
+
+    it("should allow state dates to be changed once both particpants have signed with same dates", async () => {
+        const simpleContractInstance = await SimpleContractAgreement.new({ from: accounts[0] });
+        simpleContractInstance.init(10, 1, 1655609942, 1655869142, { from: accounts[0] })
+
+        await simpleContractInstance.setOnlyEmployee({ from: accounts[1] });
+        let _startDate1 = 1664659205;
+        let _endDate1 = 1669929603;
+        await simpleContractInstance.modifyDates(_startDate1, _endDate1, {
+            from: accounts[0], gas: 5000000
+        })
+        let _startDate2 = 16646592123;
+        let _endDate2 = 16699296123;
+        await simpleContractInstance.modifyDates(_startDate2, _endDate2, { from: accounts[1], gas: 5000000 })
+        const startDate = await simpleContractInstance.getStartDate()
+        assert.notEqual(startDate, _startDate1, "state start date should not be updated as they dont match")
+        const endDate = await simpleContractInstance.getEndDate()
+        assert.notEqual(endDate, _endDate1, "state start date should be updated as they dont match")
     });
 }); 

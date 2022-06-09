@@ -1,7 +1,6 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
 var SimpleContractAgreement = artifacts.require("./SimpleContractAgreement.sol");
+var Factory = artifacts.require("./SimpleAgreementFactory.sol");
 
 module.exports = function (deployer) {
-  deployer.deploy(SimpleStorage);
-  deployer.deploy(SimpleContractAgreement, 10000, 10, 1655609942, 1655869142);
+  deployer.deploy(SimpleContractAgreement).then(() => deployer.deploy(Factory, SimpleContractAgreement.address));
 };

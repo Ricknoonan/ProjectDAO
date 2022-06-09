@@ -1,41 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
-import "./ModifyDate.sol";
 import "./SimpleContractAgreementInterface.sol";
 
-contract SimpleContractAgreement is SimpleContractAgreementInterface {
+abstract contract SimpleContractAgreement is SimpleContractAgreementInterface {
     address employer;
     address employee;
-    uint256 public startDate = 0;
+    uint256 startDate = 0;
     uint256 endDate = 0;
-    uint256 public employeeCounter = 0;
+    uint256 employeeCounter = 0;
     uint256 paymentAmount = 0;
     bool particpantDispute = false;
-    uint256 public stakeAmount = 0;
-    uint32 public stakePercent = 0;
+    uint256 stakeAmount = 0;
+    uint32 stakePercent = 0;
     uint256 particpantID = 0;
     event Received(address, uint256);
     event ModifyMismatch(uint256, uint256, string);
     event Log(string);
     uint256[] modifyTempArr;
-
-    constructor(
-        uint256 _paymentAmount,
-        uint256 _stakeAmount,
-        uint256 _startDate,
-        uint256 _endDate
-    ) {
-        require(_startDate < _endDate && _startDate > block.timestamp);
-        employer = payable(msg.sender);
-        paymentAmount = _paymentAmount;
-        stakeAmount = _stakeAmount;
-        startDate = _startDate;
-        endDate = _endDate;
-        particpants[msg.sender].hasStake = false;
-        particpants[msg.sender].particpantAddr = msg.sender;
-        particpants[msg.sender].isEmployer = true;
-    }
 
     struct particpant {
         uint256 id;
@@ -56,7 +38,7 @@ contract SimpleContractAgreement is SimpleContractAgreementInterface {
     /*This functions allows employees to "apply" and set themseleves as employee in
      * the contract without actually commiting funds
      */
-    function setEmployee() public notEmployer {
+    function setOnlyEmployee() public notEmployer {
         require(block.timestamp < startDate);
         require(employeeCounter == 0);
         employee = msg.sender;
@@ -130,21 +112,20 @@ and the initial start hasnt elapsed already
     function modifyDate(
         uint256[2] memory _tempDate,
         address[2] memory _signatures
-    ) public returns (bool success) {
+    ) private returns (bool success) {
         require(
             modifyContractDate[msg.sender] == false,
             "Address has already signed"
         );
         modifyContractDate[msg.sender] = true;
-        if (modifyTempArr[0] == 0 && modifyTempArr[1] == 0) {
-            emit Log("test");
+        if (modifyTempArr.length == 0) {
             modifyTempArr.push(_tempDate[0]);
             modifyTempArr.push(_tempDate[1]);
         } else {
             require(
                 modifyContractDate[_signatures[0]] &&
                     modifyContractDate[_signatures[1]],
-                "test"
+                "Need signatures from both parties"
             );
             if (
                 modifyTempArr[0] == _tempDate[0] &&
@@ -161,56 +142,7 @@ and the initial start hasnt elapsed already
         }
     }
 
-    /* Condition: Sends money to both sender if the contract end date has passed and there isnt a dispute
-withdraw function allows particpants to withdraw payment and stake for Employees
-and stake for employers
- */
-
-    function withdraw() public payable particpantsOnly {
-        require(
-            endDate != 0 &&
-                block.timestamp >= endDate &&
-                particpantDispute == false
-        );
-        if (msg.sender == employer) {
-            uint256 stake = particpants[msg.sender].stakeAmount;
-            payable(msg.sender).transfer(stake);
-            resetParticpants(false);
-        }
-        if (msg.sender == employee) {
-            address payable receiver = payable(msg.sender);
-            uint256 stake = particpants[msg.sender].stakeAmount;
-            receiver.transfer(stake + paymentAmount);
-            resetParticpants(false);
-        }
-    }
-
-    // if the contract hasnt started yet, send both back their stake
-    // if the contract start date has passed but only one participant
-    // if the contract has started but one participant needs to withdraw from obligations
-    function terminate() public payable particpantsOnly {
-        if (startDate < block.timestamp) {
-            for (uint256 index = 0; index < addresses.length; index++) {
-                address payable _receiver = addresses[index];
-                uint256 _amount = particpants[msg.sender].totalAmount;
-                _receiver.transfer(_amount);
-            }
-            resetParticpants(true);
-        }
-        if (
-            (particpants[msg.sender].hasStake) && (startDate > block.timestamp)
-        ) {
-            address otherParticpant = getOtherParticpant();
-            if (!particpants[otherParticpant].hasStake) {
-                address payable _receiver = payable(msg.sender);
-                uint256 _amount = particpants[msg.sender].totalAmount;
-                _receiver.transfer(_amount);
-            }
-            resetParticpants(true);
-        }
-    }
-
-    function getOtherParticpant() private view returns (address addr) {
+    function getOtherParticpant() internal view returns (address addr) {
         for (uint256 index = 0; index < addresses.length; index++) {
             if (addresses[index] != msg.sender) {
                 return addresses[index];
@@ -218,7 +150,7 @@ and stake for employers
         }
     }
 
-    function resetParticpants(bool _all) private {
+    function resetParticpants(bool _all) internal {
         if (_all) {
             for (uint256 index = 0; index < addresses.length; index++) {
                 particpants[addresses[index]].stakeAmount = 0;
@@ -267,6 +199,10 @@ and stake for employers
 
     function getEndDate() public view returns (uint256) {
         return endDate;
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
     modifier onlyEmployer() {
