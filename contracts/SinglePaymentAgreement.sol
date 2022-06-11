@@ -3,7 +3,7 @@ pragma solidity >=0.4.21 <8.10.0;
 
 import "./SimpleContractAgreement.sol";
 
-contract SimplePaymentAgreement is SimpleContractAgreement {
+contract SimplePaymentAgreSimpleement is SimpleContractAgreement {
     function init(
         uint256 _paymentAmount,
         uint256 _stakeAmount,
