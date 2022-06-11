@@ -4,7 +4,7 @@ pragma solidity >=0.4.21 <8.10.0;
 import "./SimpleContractAgreement.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract ScheduledAgreemnet is SimpleContractAgreement {
+abstract contract ScheduledAgreemnet is SimpleContractAgreement {
     uint256 interval;
     uint256[] schedule;
 
@@ -54,11 +54,13 @@ contract ScheduledAgreemnet is SimpleContractAgreement {
             );
             if (lastPayment) {
                 require(paymentMade[_timestamp] == false);
+                require(success);
                 payable(msg.sender).transfer(result);
                 paymentMade[_timestamp] = true;
                 super.resetParticpants(false);
             } else {
                 require(paymentMade[_timestamp] == false);
+                require(success);
                 paymentMade[_timestamp] = true;
                 payable(msg.sender).transfer(result);
             }
@@ -69,17 +71,17 @@ contract ScheduledAgreemnet is SimpleContractAgreement {
     // [next, next, next, end]
     // at the end of each section you can withdraw
     // if it is past the first section then, employee can withdraw and then map that timestamp
-    function calc() private returns (uint256[] storage _schedule) {
+    function calc() private view returns (uint256[] memory _schedule) {
         uint256 diff = (endDate - startDate) / 60 / 60 / 24;
         uint256 intervalDays = diff / interval;
         uint256 timestamp = startDate;
         for (uint256 index = 0; index < interval; index += intervalDays) {
             timestamp += (intervalDays * 1 days);
-            schedule.push(timestamp);
+            _schedule[index] = timestamp;
         }
     }
 
-    function checkTimestamp() private returns (uint256) {
+    function checkTimestamp() private view returns (uint256 _timestamp) {
         for (uint256 index = 0; index < schedule.length; index++) {
             if (block.timestamp > schedule[schedule.length - 1]) {
                 return schedule[schedule.length - 1];
