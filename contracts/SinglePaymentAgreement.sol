@@ -2,8 +2,10 @@
 pragma solidity >=0.4.21 <8.10.0;
 
 import "./SimpleContractAgreement.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract SimplePaymentAgreSimpleement is SimpleContractAgreement {
+abstract contract SimplePaymentAgreement is SimpleContractAgreement {
     function init(
         uint256 _paymentAmount,
         uint256 _stakeAmount,
@@ -26,23 +28,29 @@ withdraw function allows particpants to withdraw payment and stake for Employees
 and stake for employers
  */
 
-    function withdraw() public payable particpantsOnly {
+    function withdrawEmployee() public payable onlyEmployee {
         require(
             endDate != 0 &&
                 block.timestamp >= endDate &&
                 particpantDispute == false
         );
-        if (msg.sender == employer) {
-            uint256 stake = particpants[msg.sender].stakeAmount;
-            payable(msg.sender).transfer(stake);
-            super.resetParticpants(false);
-        }
-        if (msg.sender == employee) {
-            address payable receiver = payable(msg.sender);
-            uint256 stake = particpants[msg.sender].stakeAmount;
-            receiver.transfer(stake + paymentAmount);
-            super.resetParticpants(false);
-        }
+        uint256 stake = particpants[msg.sender].stakeAmount;
+        Address.sendValue(
+            payable(employee),
+            SafeMath.add(stake, paymentAmount)
+        );
+        super.resetParticpants(false);
+    }
+
+    function withdrawEmployer() public payable onlyEmployer {
+        require(
+            endDate != 0 &&
+                block.timestamp >= endDate &&
+                particpantDispute == false
+        );
+        uint256 stake = particpants[msg.sender].stakeAmount;
+        payable(msg.sender).transfer(stake);
+        super.resetParticpants(false);
     }
 
     // if the contract hasnt started yet, send both back their stake

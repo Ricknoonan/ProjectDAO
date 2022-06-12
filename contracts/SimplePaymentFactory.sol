@@ -2,9 +2,9 @@
 pragma solidity >=0.4.21 <8.10.0;
 
 import "./CloneFactory.sol";
-import "./SimpleContractAgreement.sol";
+import "./SimplePaymentAgreement.sol";
 
-contract SimpleAgreementFactory is CloneFactory {
+contract SimplePaymentAgreement is CloneFactory {
     SimpleContractAgreement[] public children;
     address masterContract;
 
@@ -18,7 +18,7 @@ contract SimpleAgreementFactory is CloneFactory {
         uint256 _startDate,
         uint256 _endDate
     ) external {
-        SimpleContractAgreement child = SimpleContractAgreement(
+        SimplePaymentAgreement child = SimplePaymentAgreement(
             createClone(masterContract)
         );
         child.init(_paymentAmount, _stakeAmount, _startDate, _endDate);

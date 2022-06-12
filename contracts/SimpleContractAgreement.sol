@@ -52,32 +52,31 @@ abstract contract SimpleContractAgreement is SimpleContractAgreementInterface {
      * commits the payment amount to the contract.
      * You can only set particpant if the contract hasnt started yet
      */
-    function setParticpantFunds() public payable particpantsOnly {
-        if (msg.sender == employer) {
-            require(block.timestamp < startDate, "must be before start date");
-            require(
-                msg.value >= (stakeAmount + paymentAmount),
-                "Insufficent amount"
-            );
-            emit Received(msg.sender, msg.value);
-            particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].stakeAmount = stakeAmount;
-            particpants[msg.sender].totalAmount = msg.value;
-            particpants[msg.sender].id = particpantID;
-            addresses.push(payable(msg.sender));
-            particpantID += 1;
-        }
-        if (msg.sender == employee) {
-            require(block.timestamp < startDate);
-            require(msg.value >= stakeAmount, "Insufficent amount");
-            emit Received(msg.sender, msg.value);
-            particpants[msg.sender].hasStake = true;
-            particpants[msg.sender].id = particpantID;
-            particpants[msg.sender].stakeAmount = stakeAmount;
-            particpants[msg.sender].totalAmount = msg.value;
-            addresses.push(payable(msg.sender));
-            particpantID += 1;
-        }
+    function setEmployeeFunds() public payable onlyEmployee {
+        require(block.timestamp < startDate);
+        require(msg.value >= stakeAmount, "Insufficent amount");
+        emit Received(msg.sender, msg.value);
+        particpants[msg.sender].hasStake = true;
+        particpants[msg.sender].id = particpantID;
+        particpants[msg.sender].stakeAmount = stakeAmount;
+        particpants[msg.sender].totalAmount = msg.value;
+        addresses.push(payable(msg.sender));
+        particpantID += 1;
+    }
+
+    function setEmployerFunds() public payable onlyEmployer {
+        require(block.timestamp < startDate, "must be before start date");
+        require(
+            msg.value >= (stakeAmount + paymentAmount),
+            "Insufficent amount"
+        );
+        emit Received(msg.sender, msg.value);
+        particpants[msg.sender].hasStake = true;
+        particpants[msg.sender].stakeAmount = stakeAmount;
+        particpants[msg.sender].totalAmount = msg.value;
+        particpants[msg.sender].id = particpantID;
+        addresses.push(payable(msg.sender));
+        particpantID += 1;
     }
 
     /* Input: proposed start and end dates that they want to change to
@@ -97,7 +96,7 @@ and the initial start hasnt elapsed already
         address[2] memory _tempSig;
         _tempDates = [_start, _end];
         _tempSig = [employee, employer];
-        if (modifyDate(_tempDates, _tempSig)) {
+        if (modify(_tempDates, _tempSig)) {
             startDate = _start;
             endDate = _end;
         } else {
@@ -109,28 +108,25 @@ and the initial start hasnt elapsed already
         }
     }
 
-    function modifyDate(
-        uint256[2] memory _tempDate,
-        address[2] memory _signatures
-    ) private returns (bool success) {
+    function modify(uint256[2] memory _temp, address[2] memory _signatures)
+        private
+        returns (bool success)
+    {
         require(
             modifyContractDate[msg.sender] == false,
             "Address has already signed"
         );
         modifyContractDate[msg.sender] = true;
         if (modifyTempArr.length == 0) {
-            modifyTempArr.push(_tempDate[0]);
-            modifyTempArr.push(_tempDate[1]);
+            modifyTempArr.push(_temp[0]);
+            modifyTempArr.push(_temp[1]);
         } else {
             require(
                 modifyContractDate[_signatures[0]] &&
                     modifyContractDate[_signatures[1]],
                 "Need signatures from both parties"
             );
-            if (
-                modifyTempArr[0] == _tempDate[0] &&
-                modifyTempArr[1] == _tempDate[1]
-            ) {
+            if (modifyTempArr[0] == _temp[0] && modifyTempArr[1] == _temp[1]) {
                 return success = true;
             } else {
                 modifyContractDate[_signatures[0]] = false;

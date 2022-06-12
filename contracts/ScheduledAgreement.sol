@@ -32,7 +32,7 @@ abstract contract ScheduledAgreemnet is SimpleContractAgreement {
 
     // withdraw fun should allow user to withdraw scheuled portion of payment that is scheuled to be released.
     // you should only be able to draw down portion that is determined by the length of contract and the interval
-    function withdraw() public payable particpantsOnly {
+    function withdrawEmployee() public payable particpantsOnly {
         require(particpantDispute == false);
         uint256 _timestamp;
         bool lastPayment = false;
