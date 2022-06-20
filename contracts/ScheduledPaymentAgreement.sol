@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
-import "./SimpleContractAgreement.sol";
+import "./AgreementAbstract.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
-abstract contract ScheduledAgreemnet is SimpleContractAgreement {
+abstract contract ScheduledPaymentAgreement is AgreementAbstract {
     uint256 interval;
     uint256[] schedule;
 
@@ -32,38 +33,36 @@ abstract contract ScheduledAgreemnet is SimpleContractAgreement {
 
     // withdraw fun should allow user to withdraw scheuled portion of payment that is scheuled to be released.
     // you should only be able to draw down portion that is determined by the length of contract and the interval
-    function withdrawEmployee() public payable particpantsOnly {
+    function withdrawEmployee() public payable onlyEmployee {
         require(particpantDispute == false);
         uint256 _timestamp;
         bool lastPayment = false;
-        if (msg.sender == employee) {
-            for (uint256 index = 0; index < schedule.length; index++) {
-                if (block.timestamp > schedule[schedule.length - 1]) {
-                    _timestamp = schedule[schedule.length - 1];
-                    lastPayment = true;
-                } else if (
-                    schedule[index] < block.timestamp &&
-                    schedule[index + 1] > block.timestamp
-                ) {
-                    _timestamp = schedule[index];
-                }
+        for (uint256 index = 0; index < schedule.length; index++) {
+            if (block.timestamp > schedule[schedule.length - 1]) {
+                _timestamp = schedule[schedule.length - 1];
+                lastPayment = true;
+            } else if (
+                schedule[index] < block.timestamp &&
+                schedule[index + 1] > block.timestamp
+            ) {
+                _timestamp = schedule[index];
             }
-            (bool success, uint256 result) = SafeMath.tryDiv(
-                paymentAmount,
-                interval
-            );
-            if (lastPayment) {
-                require(paymentMade[_timestamp] == false);
-                require(success);
-                payable(msg.sender).transfer(result);
-                paymentMade[_timestamp] = true;
-                super.resetParticpants(false);
-            } else {
-                require(paymentMade[_timestamp] == false);
-                require(success);
-                paymentMade[_timestamp] = true;
-                payable(msg.sender).transfer(result);
-            }
+        }
+        (bool success, uint256 result) = SafeMath.tryDiv(
+            paymentAmount,
+            interval
+        );
+        if (lastPayment) {
+            require(paymentMade[_timestamp] == false);
+            require(success);
+            Address.sendValue(payable(employee), result);
+            paymentMade[_timestamp] = true;
+            super.resetParticpants(false);
+        } else {
+            require(paymentMade[_timestamp] == false);
+            require(success);
+            paymentMade[_timestamp] = true;
+            Address.sendValue(payable(employee), result);
         }
     }
 

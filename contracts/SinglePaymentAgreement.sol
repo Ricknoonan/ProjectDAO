@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
-import "./SimpleContractAgreement.sol";
+import "./AgreementAbstract.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-abstract contract SimplePaymentAgreement is SimpleContractAgreement {
+abstract contract SinglePaymentAgreement is AgreementAbstract {
     function init(
         uint256 _paymentAmount,
         uint256 _stakeAmount,
@@ -49,7 +49,7 @@ and stake for employers
                 particpantDispute == false
         );
         uint256 stake = particpants[msg.sender].stakeAmount;
-        payable(msg.sender).transfer(stake);
+        Address.sendValue(payable(employer), stake);
         super.resetParticpants(false);
     }
 

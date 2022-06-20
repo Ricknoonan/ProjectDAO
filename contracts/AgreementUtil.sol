@@ -4,7 +4,7 @@ pragma solidity >=0.4.21 <8.10.0;
 // have they both signed and does the data match
 
 //TODO refactor  modify date out so that the multi sig function is refactored out
-contract ModifyDate {
+contract AgreementUtil {
     uint256[] modifyTempArr;
 
     mapping(address => bool) modifyContractDate;

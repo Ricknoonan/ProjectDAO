@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
-import "./SimpleContractAgreementInterface.sol";
+import "./AgreementInterface.sol";
 
-abstract contract SimpleContractAgreement is SimpleContractAgreementInterface {
+abstract contract AgreementAbstract is AgreementInterface {
     address employer;
     address employee;
     uint256 startDate = 0;
