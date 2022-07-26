@@ -13,25 +13,38 @@ contract SinglePaymentNoEndDate{
 // emplyee withdraws
 // employer gets money back if they both agree to terminate agreement 
 // emplyee e
+
+    //this logic handles the SR funding the contract 
     function fund() {
         
     }
 
-    function withdrawRequest() {
+    // this handles the SP trying to withdraw the funds
+    function endContractRequest() {
         
     }
 
+    function releaseFunds(){
+
+    }
+
+    //this handles the logic of the SP actually receiving the funds
     function withdraw() {
         
     }
 
+    // this handles the SR giving approval
     function approveWithdraw(){
 
     }
+
+    // this handles the SR rejecting the request
     function rejectWithdraw() {
         
     }
 
+
+    // this handles the case where SP and SR mutually agree to termainte the contract and funds get returned to the SR
     function terminate() {
         
     }
